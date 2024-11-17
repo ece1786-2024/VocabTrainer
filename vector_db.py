@@ -9,7 +9,7 @@ class WordEmbeddingDatabase:
 
         :param persist_directory: Directory to persist the ChromaDB database.
         """
-        self.client = chromadb.Client(Settings(persist_directory=persist_directory))
+        self.client = chromadb.PersistentClient(path=persist_directory)
         
         # Check if collection exists; if so, reuse it
         existing_collections = [col.name for col in self.client.list_collections()]
