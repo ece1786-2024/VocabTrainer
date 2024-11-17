@@ -2,7 +2,7 @@ import chromadb
 from chromadb.config import Settings
 
 
-class WordEmbeddingDatabase:
+class VectorDB:
     def __init__(self, glove_file, persist_directory=".chromadb"):
         """
         Initialize the WordEmbeddingDatabase.
@@ -81,7 +81,7 @@ class WordEmbeddingDatabase:
 if __name__ == "__main__":
     # Initialize the WordEmbeddingDatabase
     glove_file = 'glove.6B.50d.txt'  # Can change to use Bert
-    db = WordEmbeddingDatabase(glove_file)
+    db = VectorDB(glove_file)
 
     # Define input data
     words = ['hello', 'world', 'in', 'python']
