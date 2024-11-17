@@ -2,7 +2,7 @@ import chromadb
 from chromadb.config import Settings
 
 
-class WordEmbeddingDatabase:
+class VectorDB:
     def __init__(self, persist_directory="./chromadb"):
         """
         Initialize the WordEmbeddingDatabase.
@@ -71,7 +71,7 @@ class WordEmbeddingDatabase:
 
 if __name__ == "__main__":
     # Initialize the WordEmbeddingDatabase
-    db = WordEmbeddingDatabase()
+    db = VectorDB()
 
     # Define input data
     words = ['hello', 'world', 'in', 'python']
