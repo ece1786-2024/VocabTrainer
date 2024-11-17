@@ -10,5 +10,5 @@ class QueryAgent(Agent):
     def __init__(self):
         super().__init__(SYSTEM_PROMPT, temperature=0.7)
 
-    def query(self, user_input):
+    def query(self, user_input: str) -> str:
         return self.complete(USER_PROMPT.format(user_input=user_input)).strip()
