@@ -3,6 +3,7 @@ from chromadb.config import Settings
 
 
 class VectorDB:
+    # word, CEFR, embedding, understanding_rating, IELTS, GRE
     def __init__(self, persist_directory="./chromadb"):
         """
         Initialize the WordEmbeddingDatabase.
@@ -20,19 +21,27 @@ class VectorDB:
             print("Collection is not found")
             self.collection = self.client.create_collection(name="words_collection")
 
-    def add_word(self, word, embedding, category, exam):
+    def add_word(self, word, embedding, CEFR, IELTS, GRE):
         """
-        Add a single word with its embedding, category, and exam metadata to the database.
+        Add a single word with its embedding, CEFR, and exam metadata to the database.
 
         :param word: Word to add.
         :param embedding: Corresponding embedding for the word (vector).
-        :param category: Category for the word.
-        :param exam: Exam name associated with the word.
+        :param CEFR: CEFR level of the word.
+        :param IELTS: Boolean indicating if the word is in the IELTS exam.
+        :param GRE: Boolean indicating if the word is in the GRE exam.
         """
         if embedding is None:
             raise ValueError(f"Embedding for '{word}' is None. Cannot add to the database.")
         
-        metadata = {'category': category, 'exam': exam}
+        # Metadata for the word
+        metadata = {
+            'CEFR': CEFR,
+            'understanding_rating': 0,  # Initialize to 0
+            'IELTS': IELTS,
+            'GRE': GRE
+        }
+        
         self.collection.add(
             documents=[word],
             metadatas=[metadata],
@@ -46,27 +55,52 @@ class VectorDB:
 
         :param query_embedding: Embedding to query for.
         :param n_results: Number of results to return.
-        :return: Query results.
+        :return: List of dictionaries with word, CEFR, and understanding_rating.
         """
-        if query_embedding is not None:
-            results = self.collection.query(
-                query_embeddings=[query_embedding],
-                n_results=n_results
-            )
-            return results
-        else:
+        if query_embedding is None:
             raise ValueError("Query embedding is None. Please provide a valid embedding.")
+        
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=n_results,
+            include=["documents", "metadatas"]
+        )
+        
+        # Extract required fields from the results
+        output = []
+        for document, metadata in zip(results["documents"][0], results["metadatas"][0]):
+            output.append({
+                "word": document,
+                "CEFR": metadata["CEFR"],
+                "understanding_rating": metadata["understanding_rating"]
+            })
+        
+        return output
+
 
     def query_by_exam(self, exam_name):
         """
         Query the database by exam name.
 
-        :param exam_name: Exam name to filter by.
-        :return: Query results.
+        :param exam_name: Exam name to filter by ('IELTS' or 'GRE').
+        :return: List of dictionaries with word, CEFR, and understanding_rating.
         """
-        exam_query = {'exam': exam_name}
-        results = self.collection.get(where=exam_query)
-        return results
+        if exam_name not in ["IELTS", "GRE"]:
+            raise ValueError("Exam name must be 'IELTS' or 'GRE'.")
+        
+        exam_query = {exam_name: True}
+        results = self.collection.get(where=exam_query, include=["documents", "metadatas"])
+        
+        # Extract required fields from the results
+        output = []
+        for document, metadata in zip(results["documents"], results["metadatas"]):
+            output.append({
+                "word": document,
+                "CEFR": metadata["CEFR"],
+                "understanding_rating": metadata["understanding_rating"]
+            })
+        
+        return output
 
 
 if __name__ == "__main__":
@@ -75,8 +109,9 @@ if __name__ == "__main__":
 
     # Define input data
     words = ['hello', 'world', 'in', 'python']
-    categories = ['greeting', 'noun', 'preposition', 'programming_language']
-    exams = ['general', 'general', 'general', 'coding']
+    difficulties = ['easy', 'medium', 'easy', 'hard']
+    in_IELTS = [True, False, False, True]
+    in_GRE = [False, True, True, False]
     
     # Example embeddings (replace with actual embeddings)
     embeddings = [
@@ -87,8 +122,8 @@ if __name__ == "__main__":
     ]
 
     # Uncomment to add words to the database
-    # for word, embedding, category, exam in zip(words, embeddings, categories, exams):
-    #     db.add_word(word, embedding, category, exam)
+    for word, embedding, CEFR, ielts, gre in zip(words, embeddings, difficulties, in_IELTS, in_GRE):
+        db.add_word(word, embedding, CEFR, ielts, gre)
 
     # Query by similarity
     query_embedding = [0.15, 0.25, 0.35]  # Example query embedding
@@ -100,7 +135,7 @@ if __name__ == "__main__":
         print(e)
 
     # Query by exam name
-    exam_name = 'general'
+    exam_name = 'IELTS'  # Can also use 'GRE'
     exam_results = db.query_by_exam(exam_name)
     print(f"Results for query by exam name '{exam_name}':")
     print(exam_results)
