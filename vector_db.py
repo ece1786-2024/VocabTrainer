@@ -12,23 +12,6 @@ class WordEmbeddingDatabase:
         """
         self.client = chromadb.Client(Settings(persist_directory=persist_directory))
         self.collection = self.client.create_collection(name="words_collection")
-        self.embeddings = self._load_glove_embeddings(glove_file)
-
-    def _load_glove_embeddings(self, file_path):
-        """
-        Load GloVe embeddings from a file.
-
-        :param file_path: Path to the GloVe file.
-        :return: Dictionary of embeddings.
-        """
-        embeddings = {}
-        with open(file_path, 'r', encoding='utf8') as f:
-            for line in f:
-                values = line.strip().split()
-                word = values[0]
-                vector = [float(x) for x in values[1:]]
-                embeddings[word] = vector
-        return embeddings
 
     def add_words(self, words, embeddings, categories, exams):
         """
