@@ -2,49 +2,42 @@ import chromadb
 from chromadb.config import Settings
 
 
-class VectorDB:
-    def __init__(self, glove_file, persist_directory=".chromadb"):
+class WordEmbeddingDatabase:
+    def __init__(self, persist_directory="./chromadb"):
         """
         Initialize the WordEmbeddingDatabase.
 
-        :param glove_file: Path to the GloVe embeddings file.
         :param persist_directory: Directory to persist the ChromaDB database.
         """
-        self.client = chromadb.Client(Settings(persist_directory=persist_directory))
-        self.collection = self.client.create_collection(name="words_collection")
+        self.client = chromadb.PersistentClient(path=persist_directory)
+        
+        # Check if collection exists; if so, reuse it
+        existing_collections = [col.name for col in self.client.list_collections()]
+        if "words_collection" in existing_collections:
+            print("Found collection")
+            self.collection = self.client.get_collection(name="words_collection")
+        else:
+            print("Collection is not found")
+            self.collection = self.client.create_collection(name="words_collection")
 
-    def add_words(self, words, embeddings, categories, exams):
+    def add_word(self, word, embedding, category, exam):
         """
-        Add words with their embeddings, categories, and exam metadata to the database.
+        Add a single word with its embedding, category, and exam metadata to the database.
 
-        :param words: List of words to add.
-        :param embeddings: List of corresponding embeddings for the words.
-        :param categories: Corresponding categories for the words.
-        :param exams: Corresponding exam names for the words.
+        :param word: Word to add.
+        :param embedding: Corresponding embedding for the word (vector).
+        :param category: Category for the word.
+        :param exam: Exam name associated with the word.
         """
-        if len(words) != len(embeddings) or len(words) != len(categories) or len(words) != len(exams):
-            raise ValueError("Input lists (words, embeddings, categories, exams) must have the same length.")
-
-        documents = []
-        metadatas = []
-        embeddings_list = []
-        ids = []
-
-        for word, embedding, category, exam in zip(words, embeddings, categories, exams):
-            if embedding is not None:
-                metadata = {'category': category, 'exam': exam}
-                documents.append(word)
-                metadatas.append(metadata)
-                embeddings_list.append(embedding)
-                ids.append(word)
-            else:
-                print(f"Embedding for '{word}' is None and will be skipped.")
-
+        if embedding is None:
+            raise ValueError(f"Embedding for '{word}' is None. Cannot add to the database.")
+        
+        metadata = {'category': category, 'exam': exam}
         self.collection.add(
-            documents=documents,
-            metadatas=metadatas,
-            embeddings=embeddings_list,
-            ids=ids
+            documents=[word],
+            metadatas=[metadata],
+            embeddings=[embedding],
+            ids=[word]
         )
 
     def query_by_similarity(self, query_embedding, n_results=2):
@@ -55,7 +48,7 @@ class VectorDB:
         :param n_results: Number of results to return.
         :return: Query results.
         """
-        if query_embedding is not None:  # Check if the embedding is valid
+        if query_embedding is not None:
             results = self.collection.query(
                 query_embeddings=[query_embedding],
                 n_results=n_results
@@ -63,7 +56,6 @@ class VectorDB:
             return results
         else:
             raise ValueError("Query embedding is None. Please provide a valid embedding.")
-
 
     def query_by_exam(self, exam_name):
         """
@@ -77,35 +69,35 @@ class VectorDB:
         return results
 
 
-# Example Usage
 if __name__ == "__main__":
     # Initialize the WordEmbeddingDatabase
-    glove_file = 'glove.6B.50d.txt'  # Can change to use Bert
-    db = VectorDB(glove_file)
+    db = WordEmbeddingDatabase()
 
     # Define input data
     words = ['hello', 'world', 'in', 'python']
     categories = ['greeting', 'noun', 'preposition', 'programming_language']
     exams = ['general', 'general', 'general', 'coding']
+    
+    # Example embeddings (replace with actual embeddings)
+    embeddings = [
+        [0.1, 0.2, 0.3],  # Dummy embedding for 'hello'
+        [0.4, 0.5, 0.6],  # Dummy embedding for 'world'
+        [0.7, 0.8, 0.9],  # Dummy embedding for 'in'
+        [1.0, 1.1, 1.2]   # Dummy embedding for 'python'
+    ]
 
-    # Retrieve GloVe embeddings for the words
-    embeddings = [db.embeddings.get(word, None) for word in words]
-
-    # Add words with their metadata and embeddings to the database
-    db.add_words(words, embeddings, categories, exams)
+    # Uncomment to add words to the database
+    # for word, embedding, category, exam in zip(words, embeddings, categories, exams):
+    #     db.add_word(word, embedding, category, exam)
 
     # Query by similarity
-    query_word = 'hi'
-    query_embedding = db.embeddings.get(query_word, None)
-    if query_embedding is not None:
-        try:
-            similar_results = db.query_by_similarity(query_embedding, n_results=3)
-            print("Results for embedding similarity query:")
-            print(similar_results)
-        except ValueError as e:
-            print(e)
-    else:
-        print(f"Embedding for '{query_word}' not found in the GloVe embeddings.")
+    query_embedding = [0.15, 0.25, 0.35]  # Example query embedding
+    try:
+        similar_results = db.query_by_similarity(query_embedding, n_results=3)
+        print("Results for embedding similarity query:")
+        print(similar_results)
+    except ValueError as e:
+        print(e)
 
     # Query by exam name
     exam_name = 'general'
