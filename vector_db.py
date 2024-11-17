@@ -3,14 +3,22 @@ from chromadb.config import Settings
 
 
 class WordEmbeddingDatabase:
-    def __init__(self, persist_directory=".chromadb"):
+    def __init__(self, persist_directory="./chromadb"):
         """
         Initialize the WordEmbeddingDatabase.
 
         :param persist_directory: Directory to persist the ChromaDB database.
         """
         self.client = chromadb.Client(Settings(persist_directory=persist_directory))
-        self.collection = self.client.create_collection(name="words_collection")
+        
+        # Check if collection exists; if so, reuse it
+        existing_collections = [col.name for col in self.client.list_collections()]
+        if "words_collection" in existing_collections:
+            print("Found collection")
+            self.collection = self.client.get_collection(name="words_collection")
+        else:
+            print("Collection is not found")
+            self.collection = self.client.create_collection(name="words_collection")
 
     def add_word(self, word, embedding, category, exam):
         """
@@ -78,9 +86,9 @@ if __name__ == "__main__":
         [1.0, 1.1, 1.2]   # Dummy embedding for 'python'
     ]
 
-    # Add words to the database
-    for word, embedding, category, exam in zip(words, embeddings, categories, exams):
-        db.add_word(word, embedding, category, exam)
+    # Uncomment to add words to the database
+    # for word, embedding, category, exam in zip(words, embeddings, categories, exams):
+    #     db.add_word(word, embedding, category, exam)
 
     # Query by similarity
     query_embedding = [0.15, 0.25, 0.35]  # Example query embedding
