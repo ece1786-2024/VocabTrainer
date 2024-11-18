@@ -65,8 +65,6 @@ class AnalyzerAgent(Agent):
     def query(self, question) -> dict:
         response_text = self.complete(USER_PROMPT.format(question=question)).strip()
         try:
-            print("Query response text")
-            print(response_text)
             # Parse the JSON response
             understanding_map = json.loads(response_text)
             
