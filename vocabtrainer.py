@@ -45,15 +45,15 @@ class VocabTrainer:
         #TODO: use GUI to prompt questions
         quiz = Quiz(questions_json=questions_json)
         while True:
-            question, user_answer = quiz.run_quiz()
-            if user_answer is None:
+            run_result = quiz.run_quiz()
+            if run_result is None:
                 # No more questions available
                 break
-            else:
-                # Use the analyzer to evaluate the respnse
-                analyzer = AnalyzerAgent()
-                understanding_map = analyzer.query(question, user_answer)
-                print(understanding_map)
+            question, user_answer = run_result
+            # Use the analyzer to evaluate the respnse
+            analyzer = AnalyzerAgent()
+            understanding_map = analyzer.query(question, user_answer)
+            print(understanding_map)
 
         print("Thank you for completing today's training.")
 

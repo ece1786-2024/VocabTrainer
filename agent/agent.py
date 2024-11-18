@@ -10,7 +10,8 @@ class Agent():
 
     def complete(self, user_prompt: str) -> str:
         completion = self.client.chat.completions.create(
-            model="gpt-4o",
+            model=self.model,
+            temperature=self.temperature,
             messages = [
                 {"role": "system", "content": self.system_prompt},
                 {"role": "user", "content": user_prompt},
