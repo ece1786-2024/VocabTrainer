@@ -106,7 +106,9 @@ class VectorDB:
             output.append({
                 "word": document,
                 "CEFR": metadata["CEFR"],
-                "understanding_rating": metadata["understanding_rating"]
+                "understanding_rating": metadata["understanding_rating"],
+                "IELTS": metadata["IELTS"],
+                "GRE": metadata["GRE"]
             })
         return output
 
