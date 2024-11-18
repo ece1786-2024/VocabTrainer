@@ -1,0 +1,69 @@
+Welcome to the Query Agent!
+Describe your learning goal in a few sentences.
+For example: 'I want to prepare for the IELTS exam' or 'I need travel vocabulary.'
+
+Enter your learning goal: I want to learn words about math.
+query_words: ['equation', 'algorithm', 'geometry', 'calculus', 'theorem']
+selected_words: ['method, a2, 0', 'suppose, a2, 0', 'exact, a2, 0', 'ideal, a2, 0', 'context, a2, 0', 'theory, b1, 0', 'diagram, b1, 0', 'relation, b1, 0', 'definite, b1, 0', 'define, b1, 0']
+Generating questions...
+Question 1:
+Which word best matches the definition: 'assume that something is the case on the basis of evidence or probability'?
+  A. suppose
+  B. define
+  C. ideal
+  D. diagram
+Your answer (A/B/C/D): A   
+
+{'suppose': 1}
+Question 2:
+Which word best matches the definition: 'clearly stated or decided; not vague or doubtful'?
+  A. relation
+  B. definite
+  C. exact
+  D. method
+Your answer (A/B/C/D): D
+
+{'definite': 0}
+Question 3:
+What does the word 'relation' mean?
+Your answer: "Relation" means a connection, association, or interaction between people, objects, concepts, or events.
+
+{'relation': 1}
+Question 4:
+What does the word 'suppose' mean?
+Your answer: It means that we assume something
+
+{'suppose': 1}
+Question 5:
+Match the following words to their correct definitions:
+Words:
+  1. relation
+  2. method
+  3. suppose
+Definitions:
+  A. the way in which two or more concepts, objects, or people are connected
+  B. a particular form of procedure for accomplishing or approaching something
+  C. assume that something is the case on the basis of evidence or probability
+Enter your answers in the format '1-A, 2-B, 3-C'
+Your answers: 1-A, 2-B, 3-C
+
+{'relation': 1, 'method': 1, 'suppose': 1}
+Question 6:
+What does the word 'theory' mean?
+Your answer: It means we assume something
+
+{'theory': 0.4}
+Question 7:
+Match the following words to their correct definitions:
+Words:
+  1. context
+  2. theory
+  3. diagram
+Definitions:
+  A. the circumstances that form the setting for an event, statement, or idea
+  B. a supposition or a system of ideas intended to explain something
+  C. a simplified drawing showing the appearance, structure, or workings of something
+Enter your answers in the format '1-A, 2-B, 3-C'
+Your answers: 1-A, 2-B, 3-C
+
+Thank you for completing today's training.
