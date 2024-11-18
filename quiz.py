@@ -3,8 +3,6 @@ import random
 
 class Quiz:
     def __init__(self, questions_json):
-        print("Question_JSON is:")
-        print(questions_json)
         self.data = json.loads(questions_json)
         self.questions_list = self._prepare_questions()
         self.current_index = 0
