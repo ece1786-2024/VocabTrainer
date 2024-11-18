@@ -75,7 +75,6 @@ class VectorDB:
         
         return output
 
-
     def query_by_exam(self, exam_name):
         """
         Query the database by exam name.
@@ -98,6 +97,17 @@ class VectorDB:
                 "understanding_rating": metadata["understanding_rating"]
             })
         
+        return output
+
+    def query_all(self):
+        results = self.collection.get(include=["documents", "metadatas"])
+        output = []
+        for document, metadata in zip(results["documents"], results["metadatas"]):
+            output.append({
+                "word": document,
+                "CEFR": metadata["CEFR"],
+                "understanding_rating": metadata["understanding_rating"]
+            })
         return output
 
 
