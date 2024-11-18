@@ -52,7 +52,7 @@ class VocabTrainer:
             else:
                 # Use the analyzer to evaluate the respnse
                 analyzer = AnalyzerAgent()
-                understanding_map = analyzer.query(question)
+                understanding_map = analyzer.query(question, user_answer)
                 print(understanding_map)
 
         print("Thank you for completing today's training.")

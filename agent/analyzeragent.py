@@ -53,6 +53,9 @@ USER_PROMPT = '''
 **Question:**
 {question}
 
+**User Answer:**
+{user_answer}
+
 For this question, calculate the understanding level of each word, and output a map in JSON format, where the key is the word and the value is the understanding level (a number between 0 and 1).
 DO NOT OUTPUT ANYTHING OTHER THAN THE JSON!!!
 For example, you do not need to enclose the JSON with formatting strings like "```json"
@@ -62,8 +65,8 @@ class AnalyzerAgent(Agent):
     def __init__(self):
         super().__init__(SYSTEM_PROMPT)
 
-    def query(self, question) -> dict:
-        response_text = self.complete(USER_PROMPT.format(question=question)).strip()
+    def query(self, question, user_answer) -> dict:
+        response_text = self.complete(USER_PROMPT.format(question=question, user_answer=user_answer)).strip()
         try:
             # Parse the JSON response
             understanding_map = json.loads(response_text)
