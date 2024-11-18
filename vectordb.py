@@ -1,5 +1,4 @@
 import chromadb
-# from chromadb.config import Settings
 
 
 class VectorDB:
@@ -15,10 +14,9 @@ class VectorDB:
         # Check if collection exists; if so, reuse it
         existing_collections = [col.name for col in self.client.list_collections()]
         if "words_collection" in existing_collections:
-            print("Found collection")
             self.collection = self.client.get_collection(name="words_collection")
         else:
-            print("Collection is not found")
+            print("Collection is not found, creating a new one.")
             self.collection = self.client.create_collection(name="words_collection")
 
     def add_word(self, word, embedding, CEFR, IELTS, GRE):

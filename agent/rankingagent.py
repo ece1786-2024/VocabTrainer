@@ -1,5 +1,5 @@
 from agent.agent import Agent
-from typing import List
+from typing import List, Tuple
 
 
 SYSTEM_PROMPT = '''You are an AI language assistant tasked with recommending {k} words for me to memorize today from the following vocabulary table. Each entry in the table includes:
@@ -29,14 +29,14 @@ USER_PROMPT = '''**Instructions:**
 
 **Your Task:**
 
-Using the above instructions and vocabulary table, generate a list of {k} words for me to memorize today. Format it as one line per word and DO NOT OUTPUT ANYTHING OTHER THAN THE WORDS.'''
+Using the above instructions and vocabulary table, generate a list of {k} words for me to memorize today. Format it as one line per word (all lowercase) and DO NOT OUTPUT ANYTHING OTHER THAN THE WORDS.'''
 
 
 class RankingAgent(Agent):
     def __init__(self):
         super().__init__(SYSTEM_PROMPT)
 
-    def query(self, vocab_table: List[tuple[str, str, float]], k=20) -> List[str]:
+    def query(self, vocab_table: List[Tuple[str, str, float]], k=10) -> List[str]:
         vocab_table_str = '\n'.join([f'{word}, {cefr}, {mem}' for word, cefr, mem in vocab_table])
         complete = self.complete(USER_PROMPT.format(k=k, vocab_table=vocab_table_str))
         return [word.strip() for word in complete.splitlines() if word.strip()]
