@@ -1,6 +1,7 @@
 from agent.agent import Agent
 from typing import List
 
+#TODO: allow query by exam
 SYSTEM_PROMPT = '''You are a vocabulary assistant. Given a user's input, identify whether their goal is exam preparation (e.g., IELTS, GRE) or learning a specific area (e.g., travel, academic research). Generate a list of {k} relevant words for their context.'''
 
 USER_PROMPT = '''User's input: "{user_input}". Analyze the goal and generate a list of {k} words. Format it as one line per word (all lowercase, without any other characters, JUST PURE WORDS) and DO NOT OUTPUT ANYTHING OTHER THAN THE WORDS.'''
