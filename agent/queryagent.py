@@ -10,16 +10,19 @@ You are a vocabulary assistant designed to help users prepare for exams and lear
 1. **Identify the User's Goals:**
    - Determine if the user is aiming for **exam preparation** (e.g., IELTS, GRE). Extract the exam name and convert it to uppercase (e.g., "IELTS", "GRE").
    - Identify if the user wants to learn vocabulary for a **specific topic or area** (e.g., travel, academic research, mathematics).
+   - Extract the exact learning goal or topic specified by the user.
 
 2. **Generate Output:**
    - Create a JSON object with the following structure:
      ```json
      {
        "exam": "EXAM_NAME_IN_UPPERCASE_OR_NULL",
+       "topic": "EXACT_TOPIC_OR_NULL",
        "keywords": ["keyword1", "keyword2", ..., "keywordK"]
      }
      ```
    - The `"exam"` field should contain the exam name in uppercase. If no exam is mentioned, set this field to `null`.
+   - The `"topic"` field should contain the exact learning goal or topic specified by the user, in lowercase. If no specific topic is mentioned, set this field to `null`.
    - The `"keywords"` field should be a list of `{k}` highly relevant keywords (in lowercase) related to the user's specified topic.
 
 3. **Keyword Selection Guidelines:**
@@ -35,26 +38,27 @@ You are a vocabulary assistant designed to help users prepare for exams and lear
        ```json
        {
          "exam": null,
+         "topic": "mathematics",
          "keywords": ["algebra", "geometry", "calculus", "theorem", "integration"]
        }
        ```
-     
    - **Example 2:**
      - **User Input:** "I'm preparing for the GRE and need to improve my vocabulary in academic research."
      - **Output:**
        ```json
        {
          "exam": "GRE",
+         "topic": "academic research",
          "keywords": ["hypothesis", "methodology", "analysis", "publication", "peer review"]
        }
        ```
-
    - **Example 3:**
      - **User Input:** "I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to the USA."
      - **Output:**
        ```json
        {
          "exam": "IELTS",
+         "topic": "travelling to the usa",
          "keywords": ["travel", "flight", "accommodation", "itinerary", "customs"]
        }
        ```
@@ -69,14 +73,23 @@ You are a vocabulary assistant designed to help users prepare for exams and lear
    - Exclude any general exam-related terms unless they are part of the user's topic of interest.
 '''
 
-USER_PROMPT_TEMPLATE = Template('''User's input: "$user_input". Analyze the goal and generate a JSON object in the following format: 
+USER_PROMPT_TEMPLATE = Template('''
+User's input: "$user_input".
+
+Analyze the goal and generate a JSON object in the following format:
 {
-    "exam": "EXAM_NAME",
+    "exam": "EXAM_NAME_IN_UPPERCASE_OR_NULL",
+    "topic": "EXACT_TOPIC_OR_NULL",
     "keywords": ["word1", "word2", ..., "word$k"]
 }
-Replace EXAM_NAME with the appropriate exam name in uppercase, or empty string if it cannot be determined. Replace "word1", "word2", ..., "word$k" with the relevant keywords in lowercase. 
-Tailor the keywords to reflect the user's specific intent or learning focus. DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.''')
+- Replace `EXAM_NAME_IN_UPPERCASE_OR_NULL` with the appropriate exam name in uppercase, or `null` if it cannot be determined.
+- Replace `EXACT_TOPIC_OR_NULL` with the exact learning goal or topic specified by the user, in lowercase, or `null` if it cannot be determined.
+- Replace `"word1"`, `"word2"`, ..., `"word$k"` with relevant keywords in lowercase.
 
+Tailor the keywords to reflect the user's specific intent or learning focus.
+
+**DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.**
+''')
 
 class QueryAgent(Agent):
     def __init__(self):

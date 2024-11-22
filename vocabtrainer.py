@@ -17,15 +17,37 @@ class VocabTrainer:
         self.db = VectorDB()
         self.num_words = 5
         self.num_questions = 5
+    
+    def print_context_res(self, user_query):
+        query_res = ""
+        if user_query['exam'] != None:
+            query_res += "I will help you to prepare for the " + user_query['exam'] + " exam. "
+        if user_query['keywords'] != None and len(user_query['keywords']) > 0:
+            if (len(query_res) > 0):
+                query_res += "In addition, "
+            query_res += "I will help you to learn words related to " + user_query['topic'] + ", such as "
+
+            if not user_query['keywords']:
+                keywords_str = ''
+            elif len(user_query['keywords']) == 1:
+                keywords_str = str(user_query['keywords'][0])
+            elif len(user_query['keywords']) == 2:
+                keywords_str = user_query['keywords'][0] + " and " + user_query['keywords'][1]
+            else:
+                keywords_str = ', '.join(user_query['keywords'][:-1]) + ", and " + user_query['keywords'][-1]
+            query_res += keywords_str
+        print(f"\nGot it! {query_res}\n")
 
     def run(self):
         print("Welcome to the Query Agent!")
         print("Describe your learning goal in a few sentences.")
         print("For example: I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to USA")
 
-        user_input = input("\nEnter your learning goal: ").strip()
+        user_input = input("Enter your learning goal: ").strip()
         user_query = self.query_agent.query(user_input)
-        print('user_query:', user_query) # returns exam and keywords
+        print('user_query:', user_query) # returns exam, topic, and keywords
+
+        self.print_context_res(user_query)
 
         # Compute the average of keywords
         query_vector = np.zeros(self.embedding.dim)

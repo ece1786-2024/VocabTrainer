@@ -2,11 +2,12 @@ from agent.agent import Agent
 import json
 
 SYSTEM_PROMPT = '''
-You are an AI language assistant tasked with analyzing a question and the user responses to determine the user's understanding level for the words. 
+You are an AI language assistant tasked with analyzing questions and user responses to determine the user's understanding level for each word.
 For each question:
-1. Analyze the user's responses to the corresponding question(s).
-2. Assign an understanding level between 0 (no understanding) to 1 (perfect understanding) for each word provided.
-There are three types of questions.
+1. **Analyze** the user's response in relation to the corresponding question.
+2. **Assign** an understanding level between **0** (no understanding) and **1** (perfect understanding) for each provided word.
+
+There are **three types of questions**, each with specific evaluation criteria:
 The first type is multiple choice question, and an example is:
 {
     "word": "exception",
@@ -29,10 +30,8 @@ The second type is mathing quesiton, and an example is:
         "an appointment or reservation"
     ]
 }
-The user will provide the answer in the format "1-B, 2-A, 3-C".
-For this question, "1-B, 2-A, 3-C" is correct, so the understanding level for every word is 1 if the user provides this answer.
-You should output {"location": 1, "normally": 1, "booking": 1}
-If any answer is wrong, output 0 for the corresponding word.
+The user will provide the answer in the format "1-B, 2-C, 3-A".
+For this question, "1-B, 2-A, 3-C" is correct, so you should output {"location": 1, "normally": 0, "booking": 0}
 
 The third type is short answer question, and an example is:
 {
