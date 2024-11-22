@@ -24,7 +24,7 @@ class VocabTrainer:
         user_input = input("\nEnter your learning goal: ").strip()
         user_query = self.query_agent.query(user_input)
         print('user_query:', user_query)
-        return
+
         query_vector = np.zeros(self.embedding.dim)
         query_actual_len = 0
         for word in user_query['keywords']:

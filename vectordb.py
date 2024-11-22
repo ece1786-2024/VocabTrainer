@@ -102,8 +102,9 @@ class VectorDB:
     def query_all(self):
         results = self.collection.get(include=["documents", "metadatas"])
         output = []
-        for document, metadata in zip(results["documents"], results["metadatas"]):
+        for doc_id, document, metadata in zip(results["ids"], results["documents"], results["metadatas"]):
             output.append({
+                "id": doc_id,
                 "word": document,
                 "CEFR": metadata["CEFR"],
                 "understanding_rating": metadata["understanding_rating"],
@@ -111,7 +112,7 @@ class VectorDB:
                 "GRE": metadata["GRE"]
             })
         return output
-    
+
     def update_understanding_rating(self, word, new_rating):
         """
         Update the understanding rating of a specific word.
@@ -122,10 +123,10 @@ class VectorDB:
         if not isinstance(new_rating, (int, float)):
             raise ValueError(f"Understanding rating {new_rating} must be a number.")
         if new_rating < 0 or new_rating > 1:
-            raise ValueError(f"Understanding rating {new_rating} cannot be negative.")
+            raise ValueError(f"Understanding rating {new_rating} must be between 0 and 1.")
 
-        # Fetch the current metadata for the word using the `ids` field
-        results = self.collection.get(where={"id": word}, include=["metadatas", "documents"])
+        # Fetch the current metadata and embedding for the word using the `ids` field
+        results = self.collection.get(ids=[word], include=["metadatas", "documents", "embeddings"])
 
         if not results.get("metadatas"):
             raise ValueError(f"The word '{word}' does not exist in the database.")
@@ -133,13 +134,14 @@ class VectorDB:
         # Update the understanding rating in the metadata
         metadata = results["metadatas"][0]
         metadata["understanding_rating"] = new_rating
+        embedding = results["embeddings"][0].tolist()
 
-        # Delete the old entry and re-add with updated metadata
+        # Delete the old entry and re-add with updated metadata and existing embedding
         self.collection.delete(ids=[word])
         self.collection.add(
             documents=[word],
             metadatas=[metadata],
-            embeddings=None,  # embeddings remain unchanged
+            embeddings=[embedding],
             ids=[word]
         )
 
@@ -178,16 +180,13 @@ if __name__ == "__main__":
     print(exam_results)
 
     output = db.query_all()
-    print("OUTPUT:")
+    print("output:")
     print(output)
 
-    db.update_understanding_rating(word="python", new_rating=1)
-    try:
-        query_embedding = [1.0, 1.1, 1.2]
-        similar_results = db.query_by_similarity(query_embedding, n_results=3)
-        print("Results for embedding similarity query:")
-        print(similar_results)
-    except ValueError as e:
-        print(e)
+    db.update_understanding_rating(word="python", new_rating=0.9)
+
+    output = db.query_all()
+    print("output after updating understanding rating:")
+    print(output)
 
 
