@@ -4,16 +4,78 @@ import json
 from string import Template
 
 
-SYSTEM_PROMPT = '''You are a vocabulary assistant. Given a user's input, identify whether their goal is exam preparation (e.g., IELTS, GRE) or learning a specific area (e.g., travel, academic research, mathematics). Based on the user's intent, generate a JSON object containing the exam name (all uppercase) and a list of {k} relevant keywords (all lowercase). Ensure the keywords are highly relevant to the user's desired learning area or exam, incorporating terms that align closely with their focus. For example, if the user expresses interest in learning mathematics, include keywords like "math", "theory", "integration", "calculus", etc.'''
+SYSTEM_PROMPT = '''
+You are a vocabulary assistant designed to help users prepare for exams and learn specific topics. When provided with a user's input describing their learning goals, follow these instructions:
+
+1. **Identify the User's Goals:**
+   - Determine if the user is aiming for **exam preparation** (e.g., IELTS, GRE). Extract the exam name and convert it to uppercase (e.g., "IELTS", "GRE").
+   - Identify if the user wants to learn vocabulary for a **specific topic or area** (e.g., travel, academic research, mathematics).
+
+2. **Generate Output:**
+   - Create a JSON object with the following structure:
+     ```json
+     {
+       "exam": "EXAM_NAME_IN_UPPERCASE_OR_NULL",
+       "keywords": ["keyword1", "keyword2", ..., "keywordK"]
+     }
+     ```
+   - The `"exam"` field should contain the exam name in uppercase. If no exam is mentioned, set this field to `null`.
+   - The `"keywords"` field should be a list of `{k}` highly relevant keywords (in lowercase) related to the user's specified topic.
+
+3. **Keyword Selection Guidelines:**
+   - **Relevance:** Ensure all keywords are directly related to the user's desired learning topic.
+   - **Avoid Exam-related Terms:** If the user mentions both an exam and a topic, **do not** include keywords related to the exam itself (e.g., "listening", "reading" for IELTS).
+   - **Specificity:** Choose keywords that are specific and highly relevant to the topic to best assist the user's learning objectives.
+
+4. **Examples:**
+
+   - **Example 1:**
+     - **User Input:** "I want to learn vocabulary for mathematics."
+     - **Output:**
+       ```json
+       {
+         "exam": null,
+         "keywords": ["algebra", "geometry", "calculus", "theorem", "integration"]
+       }
+       ```
+     
+   - **Example 2:**
+     - **User Input:** "I'm preparing for the GRE and need to improve my vocabulary in academic research."
+     - **Output:**
+       ```json
+       {
+         "exam": "GRE",
+         "keywords": ["hypothesis", "methodology", "analysis", "publication", "peer review"]
+       }
+       ```
+
+   - **Example 3:**
+     - **User Input:** "I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to the USA."
+     - **Output:**
+       ```json
+       {
+         "exam": "IELTS",
+         "keywords": ["travel", "flight", "accommodation", "itinerary", "customs"]
+       }
+       ```
+
+5. **Formatting:**
+   - Return only the JSON object without additional text or explanations.
+   - Ensure proper JSON syntax to allow for easy parsing.
+
+6. **Instructions Recap:**
+   - Carefully read the user's input to accurately extract their goals.
+   - Focus on providing valuable keywords that align with their specified topic.
+   - Exclude any general exam-related terms unless they are part of the user's topic of interest.
+'''
 
 USER_PROMPT_TEMPLATE = Template('''User's input: "$user_input". Analyze the goal and generate a JSON object in the following format: 
 {
     "exam": "EXAM_NAME",
     "keywords": ["word1", "word2", ..., "word$k"]
 }
-Replace EXAM_NAME with the appropriate exam name in uppercase, or empty string if it cannot be determined. Replace "word1", "word2", ..., "word$k" with the relevant keywords in lowercase. Tailor the keywords to reflect the user's specific intent or learning focus. DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.''')
-
-
+Replace EXAM_NAME with the appropriate exam name in uppercase, or empty string if it cannot be determined. Replace "word1", "word2", ..., "word$k" with the relevant keywords in lowercase. 
+Tailor the keywords to reflect the user's specific intent or learning focus. DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.''')
 
 
 class QueryAgent(Agent):

@@ -15,16 +15,19 @@ class VocabTrainer:
         self.question_agent = QuestionAgent()
         self.embedding = GloveEmbedding()
         self.db = VectorDB()
+        self.num_words = 5
+        self.num_questions = 5
 
     def run(self):
         print("Welcome to the Query Agent!")
         print("Describe your learning goal in a few sentences.")
-        print("For example: 'I want to prepare for the IELTS exam' or 'I need travel vocabulary.'")
+        print("For example: I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to USA")
 
         user_input = input("\nEnter your learning goal: ").strip()
         user_query = self.query_agent.query(user_input)
-        print('user_query:', user_query)
+        print('user_query:', user_query) # returns exam and keywords
 
+        # Compute the average of keywords
         query_vector = np.zeros(self.embedding.dim)
         query_actual_len = 0
         for word in user_query['keywords']:
@@ -33,15 +36,16 @@ class VocabTrainer:
                 query_vector += self.embedding.encode(word)
         query_vector /= query_actual_len
         
-        candidate_table = self.db.query_by_similarity(query_vector, n_results=100)
+        # Query words similar to the keywords
+        candidate_table = self.db.query_by_similarity(query_vector, n_results=200)
         candidate_vocab = []
         for row in candidate_table:
             candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
-        selected_words = self.ranking_agent.query(candidate_vocab)
+        selected_words = self.ranking_agent.query(vocab_table=candidate_vocab, num_words=self.num_words)
         print('selected_words:', selected_words)
         
         print("Generating questions...")
-        questions_json = self.question_agent.query(selected_words)
+        questions_json = self.question_agent.query(word_list=selected_words, num_questions=self.num_questions)
 
         #TODO: use GUI to prompt questions
         quiz = Quiz(questions_json=questions_json)

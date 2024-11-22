@@ -36,7 +36,7 @@ class RankingAgent(Agent):
     def __init__(self):
         super().__init__(SYSTEM_PROMPT)
 
-    def query(self, vocab_table: List[Tuple[str, str, float]], k=10) -> List[str]:
+    def query(self, vocab_table: List[Tuple[str, str, float]], num_words=10) -> List[str]:
         vocab_table_str = '\n'.join([f'{word}, {cefr}, {mem}' for word, cefr, mem in vocab_table])
-        complete = self.complete(USER_PROMPT.format(k=k, vocab_table=vocab_table_str))
+        complete = self.complete(USER_PROMPT.format(k=num_words, vocab_table=vocab_table_str))
         return [word.strip() for word in complete.splitlines() if word.strip()]
