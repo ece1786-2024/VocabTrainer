@@ -41,8 +41,7 @@ The third type is short answer question, and an example is:
 For evaluation:
     - Analyze the accuracy and completeness of the `user_answer`.
     - Assign a float between `0` and `1` based on the correctness and depth of the response.
-    - Be generous when evaluating the level of understanding. For example, do not assign a score of 0 unless the user is completely off-track. 
-
+    - Be generous when evaluating the level of understanding. For example, do not assign a score of 0 unless the user is entirely off track. If the user conveys the correct meaning but is too brief, you may still assign full marks.
 Return the output as a map from each word to a float between 0 and 1, in JSON format. DO NOT RETURN ANYTHING ELSE.
 For example, you do not need to enclose the JSON with formatting strings like "```json"
 Also, you should return an understanding level for EVERY word given.

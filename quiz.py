@@ -22,7 +22,7 @@ class Quiz:
 
     def run_quiz(self):
         if self.current_index >= len(self.questions_list):
-            print("No more questions available.")
+            print("Thank you for completing today's training.")
             return None
 
         item = self.questions_list[self.current_index]

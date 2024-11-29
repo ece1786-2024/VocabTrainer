@@ -89,6 +89,7 @@ Analyze the goal and generate a JSON object in the following format:
 Tailor the keywords to reflect the user's specific intent or learning focus.
 
 **DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.**
+For example, do not enclose the JSON with formatting strings like "```json".
 ''')
 
 class QueryAgent(Agent):

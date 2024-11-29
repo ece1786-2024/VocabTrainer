@@ -98,6 +98,13 @@ class VectorDB:
             })
         
         return output
+    
+    def query_by_word(self, word):
+        # Fetch the current metadata and embedding for the word using the 'ids' field
+        results = self.collection.get(ids=[word], include=["metadatas", "documents", "embeddings"])
+        if not results.get("metadatas"):
+            raise ValueError(f"The word '{word}' does not exist in the database.")
+        return results
 
     def query_all(self):
         results = self.collection.get(include=["documents", "metadatas"])
@@ -125,11 +132,7 @@ class VectorDB:
         if new_rating < 0 or new_rating > 1:
             raise ValueError(f"Understanding rating {new_rating} must be between 0 and 1.")
 
-        # Fetch the current metadata and embedding for the word using the `ids` field
-        results = self.collection.get(ids=[word], include=["metadatas", "documents", "embeddings"])
-
-        if not results.get("metadatas"):
-            raise ValueError(f"The word '{word}' does not exist in the database.")
+        results = self.query_by_word(word)
 
         # Update the understanding rating in the metadata
         metadata = results["metadatas"][0]
@@ -183,9 +186,9 @@ if __name__ == "__main__":
     print("output:")
     print(output)
 
-    db.update_understanding_rating(word="python", new_rating=0.9)
+    db.update_understanding_rating(word="python", new_rating=0.8)
 
-    output = db.query_all()
+    output = db.query_by_word(word="python")
     print("output after updating understanding rating:")
     print(output)
 

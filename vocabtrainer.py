@@ -37,7 +37,7 @@ class VocabTrainer:
                 keywords_str = ', '.join(user_query['keywords'][:-1]) + ", and " + user_query['keywords'][-1]
             query_res += keywords_str
         print(f"\nGot it! {query_res}\n")
-
+    
     def run(self):
         print("Welcome to the Query Agent!")
         print("Describe your learning goal in a few sentences.")
@@ -46,8 +46,6 @@ class VocabTrainer:
         user_input = input("Enter your learning goal: ").strip()
         user_query = self.query_agent.query(user_input)
         print('user_query:', user_query) # returns exam, topic, and keywords
-
-        self.print_context_res(user_query)
 
         # Compute the average of keywords
         query_vector = np.zeros(self.embedding.dim)
@@ -63,6 +61,14 @@ class VocabTrainer:
         candidate_vocab = []
         for row in candidate_table:
             candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
+        
+        # Check whether the user has already mastered the words
+        if len(candidate_vocab) == 0:
+            print("You have already mastered all the necessary words!")
+
+        # Confirm the context
+        self.print_context_res(user_query)
+
         selected_words = self.ranking_agent.query(vocab_table=candidate_vocab, num_words=self.num_words)
         print('selected_words:', selected_words)
         
@@ -81,9 +87,9 @@ class VocabTrainer:
             analyzer = AnalyzerAgent()
             understanding_map = analyzer.query(question, user_answer)
             print(understanding_map)
-
-        print("Thank you for completing today's training.")
-
+            # update the understanding level
+            for word, rating in understanding_map.items():
+                self.db.update_understanding_rating(word=word, new_rating=rating)
 
 if __name__ == '__main__':
     trainer = VocabTrainer()
