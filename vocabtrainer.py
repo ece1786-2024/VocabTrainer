@@ -60,7 +60,8 @@ class VocabTrainer:
         candidate_table = self.db.query_by_similarity(query_vector, n_results=200)
         candidate_vocab = []
         for row in candidate_table:
-            candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
+            if row['understanding_rating'] < 0.5:
+                candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
         
         # Check whether the user has already mastered the words
         if len(candidate_vocab) == 0:
