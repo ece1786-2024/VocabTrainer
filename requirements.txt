@@ -1,5 +1,9 @@
 # Project dependencies
 chromadb>=0.4.0
+openai
+pandas
+transformers
+gradio
 
 # Optional dependencies (Development tools)
 # Uncomment the following lines to install development tools
