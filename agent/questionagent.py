@@ -56,13 +56,13 @@ Here is an example consisting of 6 questions:
         {
             "words": ["enter", "except", "register"],
             "definitions": [
-                "not including; other than",
                 "come or go into a place",
+                "not including; other than",
                 "sign up or record for an activity or for use"
             ],
             "correct_matches": {
-                "1": "B",
-                "2": "A",
+                "1": "A",
+                "2": "B",
                 "3": "C"
             }
         }

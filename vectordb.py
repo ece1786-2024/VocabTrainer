@@ -120,7 +120,7 @@ class VectorDB:
             })
         return output
 
-    def update_understanding_rating(self, word, new_rating):
+    def update_understanding_rating(self, word, new_rating, k=0.6):
         """
         Update the understanding rating of a specific word.
 
@@ -136,7 +136,7 @@ class VectorDB:
 
         # Update the understanding rating in the metadata
         metadata = results["metadatas"][0]
-        metadata["understanding_rating"] = new_rating
+        metadata["understanding_rating"] = k * new_rating + (1 - k) * metadata["understanding_rating"]
         embedding = results["embeddings"][0].tolist()
 
         # Delete the old entry and re-add with updated metadata and existing embedding
