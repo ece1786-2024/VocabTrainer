@@ -1,4 +1,6 @@
 from agent.agent import Agent
+import json
+import random
 
 
 SYSTEM_PROMPT = SYSTEM_PROMPT = '''
@@ -54,13 +56,13 @@ Here is an example consisting of 6 questions:
         {
             "words": ["enter", "except", "register"],
             "definitions": [
-                "come or go into a place",
                 "not including; other than",
+                "come or go into a place",
                 "sign up or record for an activity or for use"
             ],
             "correct_matches": {
-                "1": "A",
-                "2": "B",
+                "1": "B",
+                "2": "A",
                 "3": "C"
             }
         }
@@ -91,6 +93,7 @@ Using all the words from the list without repetition, generate exactly {k} quest
 **Instructions:**
 - Distribute the questions evenly across these types.
 - Ensure clarity and variety in the phrasing of questions.
+- Generate EXACTLY {k} questions, covering each of the {n} words evenly.
 - Provide the final set of questions in valid JSON format, following the structure shown in the example from the system prompt.
 - **DO NOT OUTPUT ANYTHING OTHER THAN THE JSON!!!**
 
@@ -103,4 +106,16 @@ class QuestionAgent(Agent):
         super().__init__(SYSTEM_PROMPT, temperature=0.7)
 
     def query(self, word_list, num_questions=20):
-        return self.complete(USER_PROMPT.format(word_list=", ".join(word_list), n=len(word_list), k=num_questions)).strip()
+        questions = json.loads(self.complete(USER_PROMPT.format(word_list=", ".join(word_list), n=len(word_list), k=num_questions)).strip())
+        for i in range(len(questions['matching'])):
+            data = questions['matching'][i]
+            indices = list(range(len(data["words"])))
+            random.shuffle(indices)
+            shuffled_words = [data["words"][i] for i in indices]
+            shuffled_matches = {str(indices.index(int(k) - 1) + 1): v for k, v in data["correct_matches"].items()}
+            questions['matching'][i] = {
+                    "words": shuffled_words,
+                    "definitions": data["definitions"],
+                    "correct_matches": shuffled_matches
+            }
+        return questions

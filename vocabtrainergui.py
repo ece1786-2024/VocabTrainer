@@ -5,7 +5,6 @@ from embedding.glove import GloveEmbedding
 from quiz import Quiz
 from vectordb import VectorDB
 import gradio as gr
-import json
 import numpy as np
 
 
@@ -19,7 +18,7 @@ class VocabTrainerGUI():
         self.question_agent = QuestionAgent()
         self.embedding = GloveEmbedding()
         self.db = VectorDB()
-        self.num_words = 5
+        self.num_words = 7
         self.num_questions = 5
 
     def run(self):
@@ -41,7 +40,7 @@ class VocabTrainerGUI():
                 query_vector /= query_actual_len
                 
                 # Query words similar to the keywords
-                candidate_table = self.db.query_by_similarity(query_vector, n_results=200)
+                candidate_table = self.db.query_by_similarity(query_vector, n_results=100)
                 candidate_vocab = []
                 for row in candidate_table:
                     if row['understanding_rating'] < 0.5:
@@ -55,11 +54,9 @@ class VocabTrainerGUI():
                 print('selected_words:', selected_words)
                 
                 print("Generating questions...")
-                data_json = self.question_agent.query(word_list=selected_words, num_questions=self.num_questions)
-                print(data_json)
-                data = json.loads(data_json)
+                data = self.question_agent.query(word_list=selected_words, num_questions=self.num_questions)
+                print(data)
                 updates = [gr.update() for _ in range(len(components))]
-                updates[component_map['user_input']] = gr.update(value="")
                 updates[component_map['ui-1']] = gr.update(visible=False)
                 updates[component_map['ui-2']] = gr.update(visible=True)
                 for i in range(component_map['1-1-q'], component_map[f'3-{MAX_PROBLEM_NUM}-a'] + 1):

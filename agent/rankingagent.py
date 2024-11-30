@@ -23,13 +23,13 @@ USER_PROMPT = '''**Instructions:**
 4. **Output Format:**
    - Provide the list of {k} words along with their CEFR level and memorization level in a clear and organized manner.
 
-**Vocabulary Table:**
+**Vocabulary Table (Columns: Word, CEFR Level, Memorization Level):**
 
 {vocab_table}
 
 **Your Task:**
 
-Using the above instructions and vocabulary table, generate a list of {k} words for me to memorize today. Format it as one line per word (all lowercase) and DO NOT OUTPUT ANYTHING OTHER THAN THE WORDS.'''
+Using the above instructions and vocabulary table, generate a list of {k} words for me to memorize today. I want just the words, i.e. what's in the first column, don't give me its CEFR or memorization level. Format it as one line per word (all lowercase) and DO NOT OUTPUT ANYTHING OTHER THAN THE WORDS.'''
 
 
 class RankingAgent(Agent):
