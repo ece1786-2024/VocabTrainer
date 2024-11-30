@@ -139,9 +139,8 @@ class VectorDB:
         metadata["understanding_rating"] = k * new_rating + (1 - k) * metadata["understanding_rating"]
         embedding = results["embeddings"][0].tolist()
 
-        # Delete the old entry and re-add with updated metadata and existing embedding
-        self.collection.delete(ids=[word])
-        self.collection.add(
+        # Update the entry
+        self.collection.upsert(
             documents=[word],
             metadatas=[metadata],
             embeddings=[embedding],
