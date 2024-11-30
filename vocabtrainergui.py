@@ -9,8 +9,8 @@ import json
 import numpy as np
 
 
-MAX_PROBLEM_NUM = 10
-MAX_MATCHING_WORD_NUM = 5
+MAX_PROBLEM_NUM = 20
+MAX_MATCHING_WORD_NUM = 10
 
 class VocabTrainerGUI():
     def __init__(self):

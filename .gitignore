@@ -2,4 +2,3 @@ __pycache__
 glove.6B.50d.txt
 embedding/__pycache__
 agent/__pycache__
-chromadb/chroma.sqlite3
