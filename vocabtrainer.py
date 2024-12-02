@@ -41,7 +41,7 @@ class VocabTrainer:
     def run(self):
         print("Welcome to the Query Agent!")
         print("Describe your learning goal in a few sentences.")
-        print("For example: I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to USA")
+        print("For example: I am preparing for IELTS, and I want to learn words related to travelling.")
 
         user_input = input("Enter your learning goal: ").strip()
         user_query = self.query_agent.query(user_input)

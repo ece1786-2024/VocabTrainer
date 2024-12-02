@@ -30,22 +30,18 @@ class VocabTrainerGUI():
             def start_btn_click(user_input):
                 user_query = self.query_agent.query(user_input)
                 print('user_query:', user_query) # returns exam, topic, and keywords
+                user_query_exam = user_query['exam']
 
                 # Compute the average of keywords
-                query_vector = np.zeros(self.embedding.dim)
-                query_actual_len = 0
-                for word in user_query['keywords']:
-                    if self.embedding.contains(word):
-                        query_actual_len += 1
-                        query_vector += self.embedding.encode(word)
-                query_vector /= query_actual_len
-                
-                # Query words similar to the keywords
-                candidate_table = self.db.query_by_similarity(query_vector, n_results=100)
                 candidate_vocab = []
-                for row in candidate_table:
-                    candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
-                
+                for word in user_query['keywords']:
+                    keyword_emb = self.embedding.encode(word)
+                    keyword_table = self.db.query_by_similarity(keyword_emb, n_results=10)
+                    for row in keyword_table:
+                        if user_query_exam == None or (user_query_exam == "GRE" and row['GRE'] == True) or (user_query_exam == "IELTS" and row['IELTS'] == True):
+                            candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
+                print("candidate_vocab: ", candidate_vocab)
+
                 # Check whether the user has already mastered the words
                 if len(candidate_vocab) == 0:
                     print("You have already mastered all the necessary words!")
@@ -155,14 +151,14 @@ class VocabTrainerGUI():
                 
 
             with gr.Column(visible=True) as user_requirements_interface:
-                gr.Markdown("# User Requirements Interface\n\n**Describe your learning goal in a few sentences. For example:**\n\n> I want to prepare for the IELTS exam and learn about vocabulary useful for travelling to USA")
+                gr.Markdown("# User Requirements Interface\n\n**Describe your learning goal in a few sentences. For example:**\n\n> I want to learn words related to traveling in the IELTS word list.")
                 user_input = gr.Textbox(label="Your requirements:")
                 component_map['user_input'] = len(components)
                 components.append(user_input)
                 start_btn = gr.Button("Next", variant="primary")
 
             with gr.Column(visible=False) as quiz_interface:
-                gr.Markdown("# Quiz Interface\n\n## Multiple Choice")
+                gr.Markdown("# Vocabulary Quiz\n\n## Multiple Choice")
                 for i in range(MAX_PROBLEM_NUM):
                     component_map[f'1-{i+1}-q'] = len(components)
                     components.append(gr.Markdown())

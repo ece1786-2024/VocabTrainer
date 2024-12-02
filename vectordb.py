@@ -69,6 +69,8 @@ class VectorDB:
         for document, metadata in zip(results["documents"][0], results["metadatas"][0]):
             output.append({
                 "word": document,
+                "IELTS": metadata["IELTS"],
+                "GRE": metadata["GRE"],
                 "CEFR": metadata["CEFR"],
                 "understanding_rating": metadata["understanding_rating"]
             })

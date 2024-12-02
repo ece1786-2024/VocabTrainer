@@ -2,7 +2,7 @@ from openai import OpenAI
 
 
 class Agent():
-    def __init__(self, system_prompt: str, model='gpt-4', temperature=1.0):
+    def __init__(self, system_prompt: str, model='gpt-4o', temperature=1.0):
         self.system_prompt = system_prompt
         self.model = model
         self.temperature = temperature

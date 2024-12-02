@@ -71,6 +71,8 @@ You are a vocabulary assistant designed to help users prepare for exams and lear
    - Carefully read the user's input to accurately extract their goals.
    - Focus on providing valuable keywords that align with their specified topic. Again, keywords should contain words that are included in the topic itself.
    - Exclude any general exam-related terms unless they are part of the user's topic of interest.
+
+DO NOT enclose the JSON with formatting strings like "```json" !!!
 '''
 
 USER_PROMPT_TEMPLATE = Template('''
@@ -89,15 +91,23 @@ Analyze the goal and generate a JSON object in the following format:
 Tailor the keywords to reflect the user's specific intent or learning focus.
 
 **DO NOT OUTPUT ANYTHING OTHER THAN THE JSON OBJECT.**
-For example, do not enclose the JSON with formatting strings like "```json".
+DO NOT enclose the JSON with formatting strings like "```json" !!!
 ''')
 
 class QueryAgent(Agent):
     def __init__(self):
         super().__init__(SYSTEM_PROMPT, temperature=0.7)
+    
+    def trim_json_markers(self, text):
+        # Remove the opening and closing markers
+        if text.startswith("```json"):
+            text = text[len("```json"):].strip()
+        if text.endswith("```"):
+            text = text[:-len("```")].strip()
+        return text
 
     def query(self, user_input: str, k=5) -> List[str]:
         complete = self.complete(USER_PROMPT_TEMPLATE.substitute(
             user_input=user_input, k=k
         ))
-        return json.loads(complete)
+        return json.loads(self.trim_json_markers(complete))

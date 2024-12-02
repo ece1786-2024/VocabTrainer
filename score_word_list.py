@@ -84,5 +84,5 @@ if __name__ == '__main__':
     words = ['suppose', 'ideal', 'relation', 'definite', 'element', 'dimension', 'corresponding', 'constraint', 'hypothesis', 'complexity']
     # words = ['diagram', 'measure', 'calculate', 'ratio', 'decimal', 'fraction', 'algebra', 'geometry', 'tally', 'equation']
     keywords = ['equation', 'integral', 'derivative', 'theorem', 'hypotenuse']
-    exam = None
-    print(score(words, keywords, exam))
+    exam = None #有考试就改成字符串
+    print(score(words, keywords, exam)) 
