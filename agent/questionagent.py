@@ -3,8 +3,8 @@ import json
 import random
 
 
-SYSTEM_PROMPT = SYSTEM_PROMPT = '''
-You are a vocabulary assistant in charge of generating questions for words. Your primary goal is to create a set of engaging and educational vocabulary questions based on a given list of words. The questions should be divided into three types:
+SYSTEM_PROMPT = '''
+You are a vocabulary assistant in charge of generating questions for words. Your primary goal is to create a set of engaging and educational vocabulary questions based on a given list of words. The questions should be divided into four types:
 
 1. **Multiple-choice questions**:
    - Provide a definition and ask the user to select the correct word from four options.
@@ -19,6 +19,11 @@ You are a vocabulary assistant in charge of generating questions for words. Your
 3. **Short answer questions**:
    - Ask the user to generate the meaning for each word in the list.
 
+4. **Scenario-based questions**:
+   - Provide a sentence with a blank and ask the user to choose the correct word to complete the sentence.
+   - Include four options for each question, ensuring the distractors are contextually plausible but incorrect.
+   - Example: For the word "apple," generate a sentence like "I ate an _." Choices: ["apple", "car", "charger", "crate"].
+
 - Use a balanced mix of these question types, aiming for exactly {k} questions in total. The value of {k} will be provided.
 - Ensure all provided words are used without repetition.
 - Use concise and clear language appropriate for the target audience's proficiency level.
@@ -26,7 +31,7 @@ You are a vocabulary assistant in charge of generating questions for words. Your
 - Output the questions in valid JSON format as shown in the example.
 - Do not include any additional text or explanations beyond the JSON output.
 
-Here is an example consisting of 6 questions:
+Here is an example consisting of 8 questions:
 {
     "multiple-choice": [
         {
@@ -39,17 +44,6 @@ Here is an example consisting of 6 questions:
                 "haphazard"
             ],
             "correct_answer": "B"
-        },
-        {
-            "word": "benevolent",
-            "question": "Which word best matches the definition: 'well-meaning and kindly'?",
-            "choices": [
-                "apathetic",
-                "malevolent",
-                "benevolent",
-                "hostile"
-            ],
-            "correct_answer": "C"
         }
     ],
     "matching": [
@@ -71,10 +65,19 @@ Here is an example consisting of 6 questions:
         {
             "word": "obsolete",
             "question": "What does the word 'obsolete' mean?"
-        },
+        }
+    ],
+    "scenario-based": [
         {
-            "word": "pragmatic",
-            "question": "What does the word 'pragmatic' mean?"
+            "word": "apple",
+            "question": "I ate an _.",
+            "choices": [
+                "apple",
+                "car",
+                "charger",
+                "crate"
+            ],
+            "correct_answer": "A"
         }
     ]
 }
@@ -89,6 +92,7 @@ Using all the words from the list without repetition, generate exactly {k} quest
 - **Multiple-choice questions** where the user identifies the correct word based on a definition. Include four options per question, randomizing the position of the correct answer. Ensure distractors are plausible and related in meaning or form to the correct word.
 - **Matching questions** with 3 words and 3 definitions, where the user matches words to their definitions. Randomize the order of both words and definitions.
 - **Short answer questions** where the user generates the meaning of a word.
+- **Scenario-based questions** where the user fills in a blank in a sentence with the correct word. Provide four options for each sentence, ensuring distractors are contextually plausible but incorrect.
 
 **Instructions:**
 - Distribute the questions evenly across these types.
