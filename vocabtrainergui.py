@@ -88,8 +88,10 @@ class VocabTrainerGUI():
                     self.query_log[user_input] = candidate_vocab
                     self.save_query_log()
 
+                vocab_table = [item for item in candidate_vocab if item[2] < 0.5]
+
                 # Check whether the user has already mastered the words
-                if len(candidate_vocab) == 0:
+                if len(vocab_table) == 0:
                     message = """
                     <div style="text-align: center; margin-top: 50px;">
                         <h1 style="color: green;">Congratulations!</h1>
