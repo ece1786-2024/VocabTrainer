@@ -136,7 +136,7 @@ class VocabTrainerGUI():
             def quiz_submit_btn_click(*args):
                 def get_score_html(score):
                     hue = score * 120
-                    return f'<strong><p style="color: hsl({hue}, 100%, 50%);">Score: {score:.2f}</p></strong>'
+                    return f'<strong><p style="color: hsl({hue}, 100%, 20%);">Score: {score:.2f}</p></strong>'
 
                 updates = [gr.update() for _ in range(len(components))]
                 updates[component_map['quiz_submit_btn']] = gr.update(visible=False)
@@ -247,7 +247,7 @@ class VocabTrainerGUI():
             component_map['quiz_submit_btn'] = len(components)
             components.append(quiz_submit_btn)
             component_map['info'] = len(components)
-            components.append(gr.HTML('<strong><u style="color: hsl(120, 100%, 50%);">Results are saved!</u></strong>', visible=False))
+            components.append(gr.HTML('<strong><u style="color: hsl(120, 100%, 20%);">Results are saved!</u></strong>', visible=False))
 
             start_btn.click(start_btn_click, user_input, components)
             quiz_back_btn.click(quiz_back_btn_click, None, components)
