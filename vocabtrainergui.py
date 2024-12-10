@@ -6,10 +6,13 @@ from embedding.glove import GloveEmbedding
 from agent.analyzeragent import AnalyzerAgent
 from vectordb import VectorDB
 import numpy as np
+import os
+import pickle
 
 
 MAX_PROBLEM_NUM = 20
 MAX_MATCHING_WORD_NUM = 10
+QUERY_LOG_FILE = "query_log.pkl"
 
 class VocabTrainerGUI():
     def __init__(self):
@@ -21,7 +24,7 @@ class VocabTrainerGUI():
         self.db = VectorDB()
         self.num_words = 7
         self.num_questions = 10
-        
+    
     def save_query_log(self):
         try:
             # Ensure the directory for QUERY_LOG_FILE exists
@@ -36,6 +39,25 @@ class VocabTrainerGUI():
 
         except Exception as e:
             print(f"Failed to save query log. Error: {e}")
+    
+    def load_query_log(self):
+        try:
+            if os.path.exists(QUERY_LOG_FILE):
+                with open(QUERY_LOG_FILE, "rb") as f:
+                    try:
+                        self.query_log = pickle.load(f)
+                        print(f"Query log loaded from disk: {self.query_log}")
+                    except EOFError:
+                        # Handle case where the file exists but is empty or corrupted
+                        self.query_log = {}
+                        print(f"Query log file {QUERY_LOG_FILE} is empty. Starting with an empty log.")
+            else:
+                self.query_log = {}
+                print("No existing query log found. Starting with an empty log.")
+        except Exception as e:
+            # Catch unexpected errors and initialize an empty log
+            self.query_log = {}
+            print(f"Error loading query log: {e}. Starting with an empty log.")
 
     def run(self):
         with gr.Blocks(title='VocabTrainer', theme=gr.themes.Soft()) as demo:
@@ -44,25 +66,36 @@ class VocabTrainerGUI():
             self.load_query_log()
 
             def start_btn_click(user_input):
-                user_query = self.query_agent.query(user_input)
-                print('user_query:', user_query) # returns exam, topic, and keywords
-                user_query_exam = user_query['exam']
+                if user_input in self.query_log:
+                    candidate_vocab = self.query_log[user_input]
+                    print("Loaded candidate_vocab from query_log: ", candidate_vocab)
+                else:
+                    user_query = self.query_agent.query(user_input)
+                    print('user_query:', user_query) # returns exam, topic, and keywords
+                    user_query_exam = user_query['exam']
 
-                # Compute the average of keywords
-                candidate_vocab = []
-                for word in user_query['keywords']:
-                    keyword_emb = self.embedding.encode(word)
-                    keyword_table = self.db.query_by_similarity(keyword_emb, n_results=10)
-                    for row in keyword_table:
-                        if user_query_exam == None or (user_query_exam == "GRE" and row['GRE'] == True) or (user_query_exam == "IELTS" and row['IELTS'] == True):
-                            candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
-                print("candidate_vocab: ", candidate_vocab)
+                    # Compute the average of keywords
+                    candidate_vocab = []
+                    for word in user_query['keywords']:
+                        keyword_emb = self.embedding.encode(word)
+                        keyword_table = self.db.query_by_similarity(keyword_emb, n_results=10)
+                        for row in keyword_table:
+                            if user_query_exam == None or (user_query_exam == "GRE" and row['GRE'] == True) or (user_query_exam == "IELTS" and row['IELTS'] == True):
+                                candidate_vocab.append((row['word'], row['CEFR'], row['understanding_rating']))
+                    print("candidate_vocab: ", candidate_vocab)
+
+                    # Save query log
+                    self.query_log[user_input] = candidate_vocab
+                    self.save_query_log()
 
                 # Check whether the user has already mastered the words
-                if len(candidate_vocab) == 0:
-                    print("You have already mastered all the necessary words!")
+                vocab_table = [item for item in candidate_vocab if item[2] < 0.5]
+                if len(vocab_table) == 0:
+                    print("Mastered all words")
+                    alert_message = "You have already mastered all the necessary words for this learning goal."
+                    return [gr.update(value=alert_message, visible=True)] + [gr.update(visible=False)] * (len(components) - 1)
 
-                selected_words = self.ranking_agent.query(vocab_table=candidate_vocab, num_words=self.num_words)
+                selected_words = self.ranking_agent.query(vocab_table=vocab_table, num_words=self.num_words)
                 print('selected_words:', selected_words)
                 
                 print("Generating questions...")
@@ -126,8 +159,6 @@ class VocabTrainerGUI():
                     )
                 
                 # Populate scenario-based questions
-                print("DEBUG-start-btn: Scenario-based questions data:", data["scenario-based"])
-
                 for i, question in enumerate(data["scenario-based"]):
                     updates[component_map[f'4-{i+1}-q']] = gr.update(
                         visible=True,
@@ -195,8 +226,6 @@ class VocabTrainerGUI():
                     score_html = get_score_html(score_map[question['word']])
                     updates[component_map[f'3-{i+1}-s']] = gr.update(visible=True, value=score_html)
 
-                print("DEBUG: Scenario-based questions data:", data["scenario-based"])
-
                 for i, question in enumerate(data["scenario-based"]):
                     user_ans = args[component_map[f'4-{i+1}-a']]
                     user_ans = chr(question['choices'].index(user_ans) + ord('A'))
@@ -210,13 +239,88 @@ class VocabTrainerGUI():
                 
                 return updates
 
-            with gr.Column(visible=True) as user_requirements_interface:
-                gr.Markdown("# User Requirements Interface\n\n**Describe your learning goal in a few sentences. For example:**\n\n> I want to learn words related to traveling in the IELTS word list.")
-                user_input = gr.Textbox(label="Your requirements:")
-                component_map['user_input'] = len(components)
-                components.append(user_input)
-                start_btn = gr.Button("Next", variant="primary")
+            # Center-aligned title and matching font size/style
+            gr.Markdown(
+                """
+                <div style="text-align: center; font-family: sans-serif; font-size: 28px; font-weight: bold;">
+                    VocabTrainer
+                </div>
+                """,
+                elem_id="learning-goals-header"
+            )
 
+            # Main Interface Layout: Two Columns
+            with gr.Row(visible=True) as main_interface:
+                # Left Column: Add a New Learning Goal
+                with gr.Column():
+                    gr.Markdown(
+                        """
+                        <p style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+                        To add a new learning goal, insert a few sentences. For example:
+                        </p>
+                        <blockquote style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+                            I want to learn words related to traveling in the IELTS word list.
+                        </blockquote>
+                        """,
+                        elem_id="new-learning-goal"
+                    )
+                    user_input = gr.Textbox(label="Your Learning Goal:")
+                    component_map['user_input'] = len(components)
+                    components.append(user_input)
+                    start_btn = gr.Button("Confirm Goal", variant="primary")
+                    start_btn.click(start_btn_click, user_input, components)
+
+                # Right Column: Previous Learning Goals
+                with gr.Column():
+                    gr.Markdown(
+                        """
+                        <p style="font-family: sans-serif; font-size: 16px; line-height: 1.6;">
+                        Alternatively, choose a previous learning goal:
+                        </p>
+                        """,
+                        elem_id="previous-goals-header"
+                    )
+                    
+                    # Dynamically add buttons for previous learning goals
+                    for goal in self.query_log.keys():  # Pass the goal (string) as input
+                        goal_button = gr.Button(
+                            value=goal,
+                            elem_id=f"goal-button-{goal}"  # Add unique IDs for buttons
+                        )
+                        goal_button.click(
+                            lambda g=goal: start_btn_click(g),  # Pass the learning goal (key)
+                            inputs=[],
+                            outputs=components
+                        )
+
+            # Custom CSS to style previous goal buttons
+            gr.HTML(
+                """
+                <style>
+                #learning-goals-header {
+                    text-align: center;
+                    margin-bottom: 20px;
+                }
+                #new-learning-goal, #previous-goals-header {
+                    font-family: sans-serif;
+                    font-size: 16px;
+                }
+                button[id^="goal-button-"] {
+                    background-color: #E6F4F1;  /* Light blue background */
+                    border: 1px solid #B0E0E6;  /* Light blue border */
+                    color: #1E4D2B;  /* Dark green text */
+                    font-weight: normal;  /* Remove bold text */
+                    padding: 10px 20px;
+                    border-radius: 5px;
+                    cursor: pointer;
+                }
+                button[id^="goal-button-"]:hover {
+                    background-color: #CCE7E3;  /* Darker blue on hover */
+                }
+                </style>
+                """
+            )
+            
             with gr.Column(visible=False) as quiz_interface:
                 gr.Markdown("# Vocabulary Quiz\n\n## Multiple Choice")
                 for i in range(MAX_PROBLEM_NUM):
@@ -261,13 +365,17 @@ class VocabTrainerGUI():
             component_map['question-data'] = len(components)
             components.append(gr.State())
             component_map['ui-1'] = len(components)
-            components.append(user_requirements_interface)
+            components.append(main_interface)
             component_map['ui-2'] = len(components)
             components.append(quiz_interface)
             component_map['quiz_submit_btn'] = len(components)
             components.append(quiz_submit_btn)
             component_map['info'] = len(components)
             components.append(gr.HTML('<strong><u style="color: hsl(120, 100%, 20%);">Results are saved!</u></strong>', visible=False))
+
+            alert_component = gr.HTML(value="", visible=False)
+            components.append(alert_component)
+            component_map['alert'] = len(components) - 1
 
             start_btn.click(start_btn_click, user_input, components)
             quiz_back_btn.click(quiz_back_btn_click, None, components)
