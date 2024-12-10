@@ -21,11 +21,27 @@ class VocabTrainerGUI():
         self.db = VectorDB()
         self.num_words = 7
         self.num_questions = 10
+        
+    def save_query_log(self):
+        try:
+            # Ensure the directory for QUERY_LOG_FILE exists
+            directory = os.path.dirname(QUERY_LOG_FILE)
+            if directory and not os.path.exists(directory):
+                os.makedirs(directory)
+
+            # Save the query log to the file
+            with open(QUERY_LOG_FILE, "wb") as f:
+                pickle.dump(self.query_log, f)
+                print(f"Query log successfully saved to: {QUERY_LOG_FILE}")
+
+        except Exception as e:
+            print(f"Failed to save query log. Error: {e}")
 
     def run(self):
         with gr.Blocks(title='VocabTrainer', theme=gr.themes.Soft()) as demo:
             component_map = {}
             components = []
+            self.load_query_log()
 
             def start_btn_click(user_input):
                 user_query = self.query_agent.query(user_input)
