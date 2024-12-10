@@ -89,11 +89,23 @@ class VocabTrainerGUI():
                     self.save_query_log()
 
                 # Check whether the user has already mastered the words
-                vocab_table = [item for item in candidate_vocab if item[2] < 0.5]
-                if len(vocab_table) == 0:
-                    print("Mastered all words")
-                    alert_message = "You have already mastered all the necessary words for this learning goal."
-                    return [gr.update(value=alert_message, visible=True)] + [gr.update(visible=False)] * (len(components) - 1)
+                if len(candidate_vocab) == 0:
+                    message = """
+                    <div style="text-align: center; margin-top: 50px;">
+                        <h1 style="color: green;">Congratulations!</h1>
+                        <h2>You have already mastered all the necessary words for the current goal!</h2>
+                        <h2>Please enter a different User Requirement above.</h2>
+                    </div>
+                    """
+                    print("Congratulations! You have already mastered all the necessary words for the current goal! Please enter a different User Requirement.")
+                    
+                    # Update the Gradio interface to display the styled message
+                    updates = [gr.update() for _ in range(len(components))]
+                    updates[component_map['info']] = gr.update(visible=True, value=message)
+                    updates[component_map['ui-1']] = gr.update(visible=True)
+                    updates[component_map['ui-2']] = gr.update(visible=False)
+                    
+                    return updates
 
                 selected_words = self.ranking_agent.query(vocab_table=vocab_table, num_words=self.num_words)
                 print('selected_words:', selected_words)

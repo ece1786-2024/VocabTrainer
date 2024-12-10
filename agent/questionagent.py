@@ -22,7 +22,9 @@ You are a vocabulary assistant in charge of generating questions for words. Your
 4. **Scenario-based questions**:
    - Provide a sentence with a blank and ask the user to choose the correct word to complete the sentence.
    - Include four options for each question, ensuring the distractors are contextually plausible but incorrect.
-   - Example: For the word "apple," generate a sentence like "I ate an _." Choices: ["apple", "car", "charger", "crate"].
+   - Make sure the options generated are not ambiguously correct, and the correct option is the only correct one fitting into the scenario.
+   - Make sure the correct answer for multiple-choice and scenario-based questions are not always the selected word.
+   - Example: For the word "apple," generate a sentence like "I ate an ____." Choices: ["apple", "car", "charger", "crate"].
 
 - Use a balanced mix of these question types, aiming for exactly {k} questions in total. The value of {k} will be provided.
 - Ensure all provided words are used without repetition.
@@ -45,6 +47,39 @@ Here is an example consisting of 8 questions:
             ],
             "correct_answer": "B"
         }
+        {
+            "word": "gregarious",
+            "question": "What kind of person enjoys attending parties and meeting new people?",
+            "choices": [
+                "reserved",
+                "gregarious",
+                "antisocial",
+                "introverted"
+            ],
+            "correct_answer": "B"
+        },
+        {
+            "word": "pragmatic",
+            "question": "If someone makes a decision based on practical outcomes rather than emotions, they are being:",
+            "choices": [
+                "pragmatic",
+                "idealistic",
+                "impulsive",
+                "impractical"
+            ],
+            "correct_answer": "A"
+        },
+        {
+            "word": "obsolete",
+            "question": "What is the opposite of 'modern'?",
+            "choices": [
+                "obsolete",
+                "innovative",
+                "contemporary",
+                "advanced"
+            ],
+            "correct_answer": "A"
+        }
     ],
     "matching": [
         {
@@ -66,16 +101,57 @@ Here is an example consisting of 8 questions:
             "word": "obsolete",
             "question": "What does the word 'obsolete' mean?"
         }
+        {
+            "word": "pragmatic",
+            "question": "Describe how a 'pragmatic' approach differs from an 'idealistic' approach to solving a problem."
+        },
+        {
+            "word": "tenacious",
+            "question": "Describe the difference between 'persistent' and 'tenacious'.
+        }
     ],
     "scenario-based": [
         {
             "word": "apple",
-            "question": "I ate an _.",
+            "question": "I ate an ____.",
             "choices": [
                 "apple",
                 "car",
                 "charger",
                 "crate"
+            ],
+            "correct_answer": "A"
+        }
+        {
+            "word": "tenacious",
+            "question": "Despite the setbacks, he remained ____, determined to finish what he started.",
+            "choices": [
+                "lazy",
+                "discouraged",
+                "timid",
+                "tenacious"
+            ],
+            "correct_answer": "D"
+        },
+        {
+            "word": "ephemeral",
+            "question": "The beauty of a sunset is ____; it fades quickly as night falls.",
+            "choices": [
+                "everlasting",
+                "eternal",
+                "ephemeral",
+                "permanent"
+            ],
+            "correct_answer": "C"
+        },
+        {
+            "word": "obsolete",
+            "question": "With advancements in technology, floppy disks have become ____.",
+            "choices": [
+                "obsolete",
+                "modern",
+                "innovative",
+                "trendy"
             ],
             "correct_answer": "A"
         }
@@ -89,7 +165,7 @@ Here is a list of {n} words:
 {word_list}
 
 Using all the words from the list without repetition, generate exactly {k} questions divided into:
-- **Multiple-choice questions** where the user identifies the correct word based on a definition. Include four options per question, randomizing the position of the correct answer. Ensure distractors are plausible and related in meaning or form to the correct word.
+- **Multiple-choice questions** where the user identifies the correct word based on a definition or select the word in the opposite meaning of another given word. Include four options per question, randomizing the position of the correct answer. Ensure distractors are plausible and related in meaning or form to the correct word.
 - **Matching questions** with 3 words and 3 definitions, where the user matches words to their definitions. Randomize the order of both words and definitions.
 - **Short answer questions** where the user generates the meaning of a word.
 - **Scenario-based questions** where the user fills in a blank in a sentence with the correct word. Provide four options for each sentence, ensuring distractors are contextually plausible but incorrect.

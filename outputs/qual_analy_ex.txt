@@ -1,0 +1,56 @@
+Prompt:
+
+First Learning:
+
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 
+'keywords': ['shopping', 'retail', 'discount', 'mall', 'purchase']}
+candidate_vocab:  [('convenience', 'b2', 0), ('retail', 'b2', 0), ('consumer', 'b1', 0), 
+('business', 'a1', 0), ('discount', 'b1', 0), ('sector', 'b2', 0), ('discount', 'b1', 0), 
+('premium', 'c1', 0), ('bargain', 'b2', 0), ('convenience', 'b2', 0), ('retail', 'b2', 0), 
+('purchase', 'b2', 0), ('fare', 'b2', 0.6), ('rental', 'c1', 0), ('downtown', 'b2', 0), 
+('adjacent', 'c1', 0), ('warehouse', 'c1', 0), ('purchase', 'b2', 0), ('acquisition', 'c1', 0), 
+('acquire', 'b2', 0), ('offer', 'a2', 0), ('option', 'a2', 0), ('commercial', 'b1', 0)]
+selected_words: ['offer', 'consumer', 'sector', 'bargain', 'purchase', 'fare', 'commercial']
+
+Second Learning:
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 
+'keywords': ['shopping', 'purchase', 'retail', 'bargain', 'store']}
+candidate_vocab:  [('convenience', 'b2', 0), ('purchase', 'b2', 0.84), ('acquisition', 'c1', 0), 
+('acquire', 'b2', 0), ('offer', 'a2', 0.0), ('option', 'a2', 0), ('commercial', 'b1', 0.6), 
+('retail', 'b2', 0), ('consumer', 'b1', 0.48), ('business', 'a1', 0), ('discount', 'b1', 0), 
+('sector', 'b2', 0.648), ('bargain', 'b2', 0.6), ('discount', 'b1', 0), ('bond', 'b2', 0), 
+('stock', 'b2', 0), ('modest', 'b2', 0), ('warehouse', 'c1', 0)]
+selected_words: ['offer', 'acquire', 'convenience', 'discount', 'purchase', 'consumer', 'retail']
+
+Third Learning:
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 'keywords': ['shopping', 'mall', 'discount', 'checkout', 'retail']}
+candidate_vocab:  [('convenience', 'b2', 0), ('downtown', 'b2', 0), ('adjacent', 'c1', 0), ('warehouse', 'c1', 0), ('discount', 'b1', 0), ('premium', 'c1', 0), ('bargain', 'b2', 0.6), ('convenience', 'b2', 0), ('retail', 'b2', 0), ('purchase', 'b2', 0.84), ('fare', 'b2', 0.696), ('rental', 'c1', 0), ('convenience', 'b2', 0), ('stall', 'b2', 0), ('convenient', 'b1', 0.84), ('retail', 'b2', 0), ('consumer', 'b1', 0.48), ('business', 'a1', 0), ('discount', 'b1', 0), ('sector', 'b2', 0.648)]
+selected_words: ['convenience', 'downtown', 'discount', 'bargain', 'consumer', 'fare', 'sector']
+
+Fourth Learning:
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 'keywords': ['shopping', 'retail', 'mall', 'discount', 'purchase']}
+candidate_vocab:  [('convenience', 'b2', 0.84), ('retail', 'b2', 0), ('consumer', 'b1', 0.792), ('business', 'a1', 0), ('discount', 'b1', 0.696), ('sector', 'b2', 0.82368), ('downtown', 'b2', 0.792), ('adjacent', 'c1', 0), ('warehouse', 'c1', 0), ('discount', 'b1', 0.696), ('premium', 'c1', 0), ('bargain', 'b2', 0.3744), ('convenience', 'b2', 0.84), ('retail', 'b2', 0), ('purchase', 'b2', 0.84), ('fare', 'b2', 0.35136), ('rental', 'c1', 0), ('purchase', 'b2', 0.84), ('acquisition', 'c1', 0), ('acquire', 'b2', 0.84), ('offer', 'a2', 0.0), ('option', 'a2', 0), ('commercial', 'b1', 0.6)]
+selected_words: ['retail', 'offer', 'consumer', 'discount', 'bargain', 'fare', 'commercial']
+
+Fifth Learning:
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 
+'keywords': ['shopping', 'retail', 'purchase', 'discount', 'store']}
+candidate_vocab:  [('convenience', 'b2', 0.84), ('retail', 'b2', 0.84), ('consumer', 'b1', 0.96672),
+ ('business', 'a1', 0), ('discount', 'b1', 0.95136), ('sector', 'b2', 0.82368), 
+ ('purchase', 'b2', 0.84), ('acquisition', 'c1', 0), ('acquire', 'b2', 0.84), ('offer', 'a2', 0.84), 
+ ('option', 'a2', 0), ('commercial', 'b1', 0.9359999999999999), ('discount', 'b1', 0.95136), 
+ ('premium', 'c1', 0), ('bargain', 'b2', 0.899904), ('convenience', 'b2', 0.84), 
+ ('retail', 'b2', 0.84), ('purchase', 'b2', 0.84), ('fare', 'b2', 0.8962176), ('rental', 'c1', 0), 
+ ('warehouse', 'c1', 0)]
+selected_words: ['business', 'option', 'acquisition', 'premium', 'rental', 'offer', 'sector']
+
+......
+
+21st Learning:
+user_query: {'exam': 'IELTS', 'topic': 'shopping in the us', 
+'keywords': ['shopping', 'purchase', 'store', 'retail', 'currency']}
+candidate_vocab:  []
+Congratulations! You have already mastered all the necessary words for the current goal!
+Please enter a different User Requirement.
+
+
