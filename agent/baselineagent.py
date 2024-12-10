@@ -23,7 +23,8 @@ Once you have selected these words, generate exactly $k questions based on the s
 
 1. **Multiple-choice questions**: Provide a definition, and the user selects the correct word from four options.  
 2. **Matching questions**: Include three words and three definitions, where the user matches each word to its correct definition.  
-3. **Short-answer questions**: Ask the user to provide the meaning of a given word.  
+3. **Short-answer questions**: Ask the user to provide the meaning of a given word.
+3. **Scenario-Based questions**: Ask the user to select the correct word in a sentence with a certain scenario with both correct meaning and grammar structure.                                
 
 Your final output (including the selected words and the questions) must be in a complete JSON Object. Below is an example of the desired output format:
 {
@@ -78,7 +79,53 @@ Your final output (including the selected words and the questions) must be in a 
                 "word": "pragmatic",
                 "question": "What does the word 'pragmatic' mean?"
             }
-        ]
+        ],
+         "scenario-based": [
+            {
+            {
+                "word": "meticulous",
+                "question": "She was very ____ about organizing the event, ensuring every detail was perfect.",
+                "choices": [
+                    "meticulous",
+                    "careless",
+                    "indifferent",
+                    "hurried"
+                ],
+                "correct_option": "A"
+            },
+            {
+                "word": "gregarious",
+                "question": "Sarah is extremely ____ , always seeking out social gatherings and enjoying large groups of people.",
+                "choices": [
+                    "introverted",
+                    "reserved",
+                    "gregarious",
+                    "shy"
+                ],
+                "correct_option": "C"
+            },
+            {
+                "word": "ambiguous",
+                "question": "The teacher's instructions were so ____ that students were unsure how to complete the assignment.",
+                "choices": [
+                    "clear",
+                    "ambiguous",
+                    "straightforward",
+                    "specific"
+                ],
+                "correct_option": "B"
+            },
+            {
+                "word": "pragmatic",
+                "question": "She approached the problem in a _ way, considering practical solutions over abstract ideas.",
+                "choices": [
+                    "pragmatic",
+                    "idealistic",
+                    "unrealistic",
+                    "theoretical"
+                ],
+                "correct_option": "A"
+            }                         
     }
 }
 
