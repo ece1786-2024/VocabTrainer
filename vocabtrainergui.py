@@ -147,8 +147,9 @@ class VocabTrainerGUI():
                     user_ans = args[component_map[f'1-{i+1}-a']]
                     user_ans = chr(question['choices'].index(user_ans) + ord('A'))
                     score_map = self.analyzer_agent.query(question, user_ans)
-                    for word, rating in score_map.items():
-                        self.db.update_understanding_rating(word=word, new_rating=rating)
+                    for word, rating in list(score_map.items()):
+                        if self.db.update_understanding_rating(word=word, new_rating=rating) == False:
+                            score_map[word] = 0
                     score_html = get_score_html(score_map[question['word']])
                     score_html += f"<p><strong>Correct answer: {question['correct_answer']}</strong></p>"
                     updates[component_map[f'1-{i+1}-s']] = gr.update(visible=True, value=score_html)
@@ -161,8 +162,9 @@ class VocabTrainerGUI():
                         arg = args[component_map[f'2-{i+1}-{j+1}-a']]
                         user_ans += f'{j+1}-{arg}'
                     score_map = self.analyzer_agent.query(question, user_ans)
-                    for word, rating in score_map.items():
-                        self.db.update_understanding_rating(word=word, new_rating=rating)
+                    for word, rating in list(score_map.items()):
+                        if self.db.update_understanding_rating(word=word, new_rating=rating) == False:
+                            score_map[word] = 0
                     for j, word in enumerate(question['words']):
                         score_html = get_score_html(score_map[word])
                         score_html += f"<p><strong>Correct answer: {question['correct_matches'][f'{j+1}']}</strong></p>"
@@ -171,8 +173,9 @@ class VocabTrainerGUI():
                 for i, question in enumerate(data["short-answer"]):
                     user_ans = args[component_map[f'3-{i+1}-a']]
                     score_map = self.analyzer_agent.query(question, user_ans)
-                    for word, rating in score_map.items():
-                        self.db.update_understanding_rating(word=word, new_rating=rating)
+                    for word, rating in list(score_map.items()):
+                        if self.db.update_understanding_rating(word=word, new_rating=rating) == False:
+                            score_map[word] = 0
                     score_html = get_score_html(score_map[question['word']])
                     updates[component_map[f'3-{i+1}-s']] = gr.update(visible=True, value=score_html)
 
@@ -182,8 +185,9 @@ class VocabTrainerGUI():
                     user_ans = args[component_map[f'4-{i+1}-a']]
                     user_ans = chr(question['choices'].index(user_ans) + ord('A'))
                     score_map = self.analyzer_agent.query(question, user_ans)
-                    for word, rating in score_map.items():
-                        self.db.update_understanding_rating(word=word, new_rating=rating)
+                    for word, rating in list(score_map.items()):
+                        if self.db.update_understanding_rating(word=word, new_rating=rating) == False:
+                            score_map[word] = 0
                     score_html = get_score_html(score_map[question['word']])
                     score_html += f"<p><strong>Correct answer: {question['correct_answer']}</strong></p>"
                     updates[component_map[f'4-{i+1}-s']] = gr.update(visible=True, value=score_html)

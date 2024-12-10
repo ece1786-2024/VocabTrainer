@@ -24,7 +24,7 @@ Once you have selected these words, generate exactly $k questions based on the s
 1. **Multiple-choice questions**: Provide a definition, and the user selects the correct word from four options.  
 2. **Matching questions**: Include three words and three definitions, where the user matches each word to its correct definition.  
 3. **Short-answer questions**: Ask the user to provide the meaning of a given word.
-3. **Scenario-Based questions**: Ask the user to select the correct word in a sentence with a certain scenario with both correct meaning and grammar structure.                                
+4. **Scenario-Based questions**: Ask the user to select the correct word in a sentence with a certain scenario with both correct meaning and grammar structure.                                
 
 Your final output (including the selected words and the questions) must be in a complete JSON Object. Below is an example of the desired output format:
 {
